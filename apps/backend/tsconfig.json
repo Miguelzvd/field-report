@@ -15,10 +15,7 @@
     "resolveJsonModule": true,
     "declaration": true,
     "sourceMap": true,
-    "baseUrl": ".",
-    "paths": {
-      "@field-report/shared": ["../../packages/shared/src/index.ts"]
-    }
+    "preserveSymlinks": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "tests"]
