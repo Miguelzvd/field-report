@@ -2,13 +2,14 @@
 
 import { use } from "react";
 import Link from "next/link";
-import { ArrowLeft, FileText } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, FileText, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checklist } from "@/components/services/checklist";
-import { useServiceDetail } from "@/hooks/use-services";
+import { useAdminServiceDetail } from "@/hooks/use-admin";
 import { SERVICE_TYPE_LABELS, SERVICE_STATUS_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +19,7 @@ interface Props {
 
 export default function AdminServiceDetailPage({ params }: Props) {
   const { id } = use(params);
-  const { service, loading } = useServiceDetail(id);
+  const { service, loading } = useAdminServiceDetail(id);
 
   if (loading) {
     return (
@@ -66,13 +67,54 @@ export default function AdminServiceDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {service.checklist && (
+      {service.user && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+              <User className="size-4" />
+              Técnico responsável
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm font-medium">{service.user.name}</p>
+            <p className="text-xs text-muted-foreground">{service.user.email}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {service.checklist && service.checklist.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold">Checklist</CardTitle>
           </CardHeader>
           <CardContent>
             <Checklist items={service.checklist} serviceId={id} readOnly />
+          </CardContent>
+        </Card>
+      )}
+
+      {service.photos && service.photos.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold">Fotos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {service.photos.map((photo) => (
+                <div
+                  key={photo.id}
+                  className="relative aspect-square overflow-hidden rounded-lg border border-border"
+                >
+                  <Image
+                    src={photo.url}
+                    alt="Foto do serviço"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 50vw, 33vw"
+                  />
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       )}

@@ -21,7 +21,7 @@ export function useReport(serviceId: string) {
   const fetch = useCallback(async () => {
     try {
       setLoading(true)
-      const res = await api.get<FullReport>(`/reports/${serviceId}`)
+      const res = await api.get<FullReport>(`/services/${serviceId}/report`)
       setReport(res.data)
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -48,7 +48,7 @@ export function useCreateReport(serviceId: string) {
   }) => {
     setLoading(true)
     try {
-      const res = await api.post<Report>(`/reports/${serviceId}`, data)
+      const res = await api.post<Report>(`/services/${serviceId}/report`, data)
       toast.success("Relatório gerado com sucesso!")
       return res.data
     } catch (err) {

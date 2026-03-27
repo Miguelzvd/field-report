@@ -13,7 +13,7 @@ export function usePhotos(serviceId: string) {
   const fetch = useCallback(async () => {
     try {
       setLoading(true)
-      const res = await api.get<Photo[]>(`/photos/${serviceId}`)
+      const res = await api.get<Photo[]>(`/services/${serviceId}/photos`)
       setPhotos(res.data)
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -39,7 +39,7 @@ export function useUploadPhoto(serviceId: string) {
     try {
       const formData = new FormData()
       formData.append("photo", file)
-      const res = await api.post<Photo>(`/photos/${serviceId}`, formData, {
+      const res = await api.post<Photo>(`/services/${serviceId}/photos`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       toast.success("Foto enviada com sucesso!")

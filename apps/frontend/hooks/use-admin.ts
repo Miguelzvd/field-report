@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { toast } from "sonner"
 import axios from "axios"
 import api from "@/lib/api"
-import type { ServiceType } from "@field-report/shared"
+import type { ServiceType, ChecklistItem, Photo } from "@field-report/shared"
 import type { ApiService } from "@/hooks/use-services"
 
 export interface AdminService extends ApiService {
@@ -13,6 +13,11 @@ export interface AdminService extends ApiService {
     name: string
     email: string
   }
+}
+
+export interface AdminServiceDetail extends AdminService {
+  checklist: ChecklistItem[]
+  photos: Photo[]
 }
 
 export interface AdminTechnician {
@@ -39,11 +44,11 @@ export function useAdminServices() {
   const fetch = useCallback(async () => {
     try {
       setLoading(true)
-      const res = await api.get<AdminService[]>("services")
+      const res = await api.get<AdminService[]>("/services")
       setServices(res.data)
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message ?? "Erro ao carregar serviços")
+        toast.error(err.response?.data?.error ?? "Erro ao carregar serviços")
       }
     } finally {
       setLoading(false)
@@ -57,6 +62,31 @@ export function useAdminServices() {
   return { services, loading, refetch: fetch }
 }
 
+export function useAdminServiceDetail(id: string) {
+  const [service, setService] = useState<AdminServiceDetail | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  const fetch = useCallback(async () => {
+    try {
+      setLoading(true)
+      const res = await api.get<AdminServiceDetail>(`/services/${id}`)
+      setService(res.data)
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.error ?? "Erro ao carregar serviço")
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [id])
+
+  useEffect(() => {
+    void fetch()
+  }, [fetch])
+
+  return { service, loading, refetch: fetch }
+}
+
 export function useAdminTechnicians() {
   const [technicians, setTechnicians] = useState<AdminTechnician[]>([])
   const [loading, setLoading] = useState(true)
@@ -64,11 +94,11 @@ export function useAdminTechnicians() {
   const fetch = useCallback(async () => {
     try {
       setLoading(true)
-      const res = await api.get<AdminTechnician[]>("users/technicians")
+      const res = await api.get<AdminTechnician[]>("/users")
       setTechnicians(res.data)
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message ?? "Erro ao carregar técnicos")
+        toast.error(err.response?.data?.error ?? "Erro ao carregar técnicos")
       }
     } finally {
       setLoading(false)
@@ -89,11 +119,11 @@ export function useAdminMetrics() {
   const fetch = useCallback(async () => {
     try {
       setLoading(true)
-      const res = await api.get<AdminMetrics>("services/metrics")
+      const res = await api.get<AdminMetrics>("/services/metrics")
       setMetrics(res.data)
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message ?? "Erro ao carregar métricas")
+        toast.error(err.response?.data?.error ?? "Erro ao carregar métricas")
       }
     } finally {
       setLoading(false)
