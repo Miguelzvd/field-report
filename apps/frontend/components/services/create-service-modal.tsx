@@ -22,10 +22,10 @@ export function CreateServiceModal({ open, onOpenChange }: CreateServiceModalPro
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto sm:rounded-xl">
         <DialogHeader>
           <DialogTitle className="text-2xl">
-            Nova Ordem de Serviço
+            Novo Serviço
           </DialogTitle>
           <DialogDescription>
-            Preencha os dados básicos abaixo para iniciar o atendimento.
+            Escolha uma das opções de serviços
           </DialogDescription>
         </DialogHeader>
 

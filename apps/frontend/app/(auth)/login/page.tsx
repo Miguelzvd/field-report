@@ -1,52 +1,55 @@
-"use client"
+"use client";
 
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Wind } from "lucide-react"
-import { toast } from "sonner"
-import axios from "axios"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useAuthStore } from "@/store/auth.store"
-import api from "@/lib/api"
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Wind } from "lucide-react";
+import { toast } from "sonner";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuthStore } from "@/store/auth.store";
+import api from "@/lib/api";
 
 const schema = z.object({
   email: z.string().email("Email inválido"),
   password: z.string().min(1, "Senha obrigatória"),
-})
+});
 
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof schema>;
 
 interface LoginResponse {
-  user: { id: string; name: string; email: string; role: string }
-  tokens: { accessToken: string; refreshToken: string }
+  user: { id: string; name: string; email: string; role: string };
+  tokens: { accessToken: string; refreshToken: string };
 }
 
 export default function LoginPage() {
-  const router = useRouter()
-  const { login } = useAuthStore()
+  const router = useRouter();
+  const { login } = useAuthStore();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) })
+  } = useForm<FormValues>({
+    // @ts-expect-error @hookform/resolvers
+    resolver: zodResolver(schema) as Resolver<FormValues>,
+  });
 
   const onSubmit = async (data: FormValues) => {
     try {
-      const res = await api.post<LoginResponse>("/auth/login", data)
-      login(res.data.user, res.data.tokens.accessToken)
-      router.replace("/dashboard")
+      const res = await api.post<LoginResponse>("/auth/login", data);
+      login(res.data.user, res.data.tokens.accessToken);
+      router.replace("/dashboard");
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message ?? "Credenciais inválidas")
+        toast.error(err.response?.data?.message ?? "Credenciais inválidas");
       }
     }
-  }
+  };
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center px-4 py-12">
@@ -104,7 +107,10 @@ export default function LoginPage() {
         <div className="space-y-2 text-center text-sm">
           <p className="text-muted-foreground">
             Não tem conta?{" "}
-            <Link href="/register" className="text-primary hover:underline font-medium">
+            <Link
+              href="/register"
+              className="text-primary hover:underline font-medium"
+            >
               Criar conta
             </Link>
           </p>
@@ -117,5 +123,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
