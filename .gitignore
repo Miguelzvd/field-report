@@ -45,6 +45,8 @@ drizzle/migrations/
 
 # next.js
 /.next/
+apps/*/.next/
+apps/*/out/
 /out/
 
 # production
