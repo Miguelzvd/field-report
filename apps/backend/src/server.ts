@@ -5,6 +5,7 @@ import cors from "cors";
 import authRoutes from "./modules/auth/auth.routes";
 import servicesRoutes from "./modules/services/services.routes";
 import photosRoutes from "./modules/photos/photos.routes";
+import reportsRoutes from "./modules/reports/reports.routes";
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -23,6 +24,7 @@ if (!process.env.STORAGE_PROVIDER || process.env.STORAGE_PROVIDER === "local") {
 app.use("/auth", authRoutes);
 app.use("/services", servicesRoutes);
 app.use("/services/:id/photos", photosRoutes);
+app.use("/services/:id/report", reportsRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
