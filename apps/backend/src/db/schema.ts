@@ -33,6 +33,7 @@ export const services = pgTable("services", {
     .references(() => users.id, { onDelete: "cascade" }),
   type: serviceTypeEnum("type").notNull(),
   status: serviceStatusEnum("status").notNull().default("open"),
+  notes: text("notes"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   finishedAt: timestamp("finished_at"),
 })

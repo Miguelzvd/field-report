@@ -11,6 +11,8 @@ export interface ApiService {
   userId: string
   type: ServiceType
   status: "open" | "finished"
+  notes: string | null
+  hasReport: boolean
   createdAt: string
   finishedAt: string | null
   checklist?: ChecklistItem[]
@@ -27,7 +29,7 @@ export function useServices() {
       setServices(res.data)
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message ?? "Erro ao carregar serviços")
+        toast.error(err.response?.data?.error ?? "Erro ao carregar serviços")
       }
     } finally {
       setLoading(false)
@@ -56,7 +58,7 @@ export function useServiceDetail(id: string) {
       setService(res.data)
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message ?? "Erro ao carregar serviço")
+        toast.error(err.response?.data?.error ?? "Erro ao carregar serviço")
       }
     } finally {
       setLoading(false)
@@ -84,7 +86,7 @@ export function useCreateService() {
       return res.data
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message ?? "Erro ao criar serviço")
+        toast.error(err.response?.data?.error ?? "Erro ao criar serviço")
       }
       return null
     } finally {
@@ -119,12 +121,12 @@ export function useFinishService() {
   const finishService = async (id: string) => {
     setLoading(true)
     try {
-      await api.patch(`/services/${id}`, { status: "finished" })
+      await api.patch(`/services/${id}`, { status: "finished", finishedAt: new Date().toISOString() })
       toast.success("Serviço finalizado!")
       return true
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message ?? "Erro ao finalizar serviço")
+        toast.error(err.response?.data?.error ?? "Erro ao finalizar serviço")
       }
       return false
     } finally {
@@ -133,4 +135,48 @@ export function useFinishService() {
   }
 
   return { finishService, loading }
+}
+
+export function useDeleteService() {
+  const [loading, setLoading] = useState(false)
+
+  const deleteService = async (id: string) => {
+    setLoading(true)
+    try {
+      await api.delete(`/services/${id}`)
+      toast.success("Serviço cancelado.")
+      return true
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.error ?? "Erro ao cancelar serviço")
+      }
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { deleteService, loading }
+}
+
+export function useSaveNotes() {
+  const [loading, setLoading] = useState(false)
+
+  const saveNotes = async (id: string, notes: string) => {
+    setLoading(true)
+    try {
+      await api.patch(`/services/${id}`, { notes })
+      toast.success("Observação salva!")
+      return true
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.error ?? "Erro ao salvar observação")
+      }
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { saveNotes, loading }
 }
