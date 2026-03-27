@@ -206,10 +206,3 @@ O administrador tem visão completa da operação, sem interferir nos atendiment
 | Campo   | Regra                                                   |
 | ------- | ------------------------------------------------------- |
 | Arquivo | Obrigatório, extensões aceitas: `.jpg`, `.jpeg`, `.png` |
-
-**Relatório**
-
-| Campo               | Regra       |
-| ------------------- | ----------- |
-| Nome do responsável | Obrigatório |
-| Observações         | Opcional    |
