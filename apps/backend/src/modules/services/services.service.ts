@@ -123,5 +123,12 @@ export async function deleteService(id: string, userId: string): Promise<void> {
     });
   }
 
+  if (existing.status === "finished") {
+    throw Object.assign(
+      new Error("Serviço já finalizado não pode ser cancelado"),
+      { statusCode: 400 },
+    );
+  }
+
   await servicesRepository.deleteService(id);
 }
