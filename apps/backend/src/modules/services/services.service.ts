@@ -35,7 +35,6 @@ const DEFAULT_CHECKLISTS: Record<ServiceType, string[]> = {
 export interface ServiceDetail extends ServiceSelect {
   checklist: ChecklistItemSelect[];
   photos: PhotoSelect[];
-  hasReport: boolean;
 }
 
 export async function createService(
@@ -49,7 +48,7 @@ export async function createService(
     checklistLabels.map((label) => ({ serviceId: service.id, label })),
   );
 
-  return { ...service, checklist: checklistItems, photos: [], hasReport: false };
+  return { ...service, checklist: checklistItems, photos: [] };
 }
 
 export async function listServices(
@@ -81,13 +80,12 @@ export async function getServiceDetail(
     });
   }
 
-  const [checklist, photos, hasReport] = await Promise.all([
+  const [checklist, photos] = await Promise.all([
     servicesRepository.findChecklistByServiceId(id),
     servicesRepository.findPhotosByServiceId(id),
-    servicesRepository.checkHasReport(id),
   ]);
 
-  return { ...service, checklist, photos, hasReport };
+  return { ...service, checklist, photos };
 }
 
 export async function updateService(

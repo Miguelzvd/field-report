@@ -5,7 +5,6 @@ import cors from "cors";
 import authRoutes from "./modules/auth/auth.routes";
 import servicesRoutes from "./modules/services/services.routes";
 import photosRoutes from "./modules/photos/photos.routes";
-import reportsRoutes from "./modules/reports/reports.routes";
 import usersRoutes from "./modules/users/users.routes";
 
 const app = express();
@@ -31,7 +30,6 @@ app.use("/auth", authRoutes);
 app.use("/services", servicesRoutes);
 app.use("/users", usersRoutes);
 app.use("/services/:id/photos", photosRoutes);
-app.use("/services/:id/report", reportsRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);

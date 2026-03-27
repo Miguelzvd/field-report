@@ -12,7 +12,6 @@ export interface ApiService {
   type: ServiceType
   status: "open" | "finished"
   notes: string | null
-  hasReport: boolean
   createdAt: string
   finishedAt: string | null
   checklist?: ChecklistItem[]

@@ -56,3 +56,25 @@ export function useUploadPhoto(serviceId: string) {
 
   return { uploadPhoto, uploading }
 }
+
+export function useDeletePhoto(serviceId: string) {
+  const [deleting, setDeleting] = useState(false)
+
+  const deletePhoto = async (photoId: string) => {
+    setDeleting(true)
+    try {
+      await api.delete(`/services/${serviceId}/photos/${photoId}`)
+      toast.success("Foto removida.")
+      return true
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.error ?? "Erro ao remover foto")
+      }
+      return false
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  return { deletePhoto, deleting }
+}

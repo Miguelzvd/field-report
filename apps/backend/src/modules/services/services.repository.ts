@@ -4,7 +4,6 @@ import {
   services,
   checklistItems,
   photos,
-  reports,
   ServiceInsert,
   ServiceSelect,
   ChecklistItemInsert,
@@ -132,15 +131,6 @@ export async function updateChecklistItem(
     .where(eq(checklistItems.id, id))
     .returning()
   return result[0]
-}
-
-export async function checkHasReport(serviceId: string): Promise<boolean> {
-  const result = await db
-    .select({ id: reports.id })
-    .from(reports)
-    .where(eq(reports.serviceId, serviceId))
-    .limit(1)
-  return result.length > 0
 }
 
 export async function getAdminMetrics() {

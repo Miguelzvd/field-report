@@ -5,7 +5,6 @@ import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
-  FileText,
   CheckCircle2,
   Loader2,
   Trash2,
@@ -62,7 +61,8 @@ export default function ServiceDetailPage({ params }: Props) {
   };
 
   const handleSaveNotes = async () => {
-    await saveNotes(id, notes ?? "");
+    const ok = await saveNotes(id, notes ?? "");
+    if (ok) await refetch();
   };
 
   if (loading) {
@@ -79,6 +79,7 @@ export default function ServiceDetailPage({ params }: Props) {
 
   const isFinished = service.status === "finished";
   const currentNotes = notes ?? "";
+  const canEditNotes = !isFinished || !service.notes;
 
   return (
     <>
@@ -128,10 +129,10 @@ export default function ServiceDetailPage({ params }: Props) {
           </div>
         )}
 
-        {/* Observações — editável quando em andamento */}
-        {!isFinished && (
+        {/* Observação do serviço — editável */}
+        {canEditNotes && (
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
-            <p className="text-sm font-semibold">Observações</p>
+            <p className="text-sm font-semibold">Observação do serviço</p>
             <textarea
               rows={4}
               maxLength={500}
@@ -162,10 +163,10 @@ export default function ServiceDetailPage({ params }: Props) {
           </div>
         )}
 
-        {/* Observações — somente leitura quando finalizado */}
+        {/* Observação do serviço — somente leitura */}
         {isFinished && service.notes && (
           <div className="rounded-xl border border-border bg-card p-4 space-y-1">
-            <p className="text-sm font-semibold">Observações</p>
+            <p className="text-sm font-semibold">Observação do serviço</p>
             <p className="text-sm text-muted-foreground whitespace-pre-wrap">
               {service.notes}
             </p>
@@ -206,29 +207,6 @@ export default function ServiceDetailPage({ params }: Props) {
                 Cancelar serviço
               </Button>
             </>
-          )}
-
-          {isFinished && service.hasReport && (
-            <Button
-              variant="outline"
-              className="w-full gap-2"
-              nativeButton={false}
-              render={<Link href={`/services/${id}/report`} />}
-            >
-              <FileText className="size-4" />
-              Ver relatório
-            </Button>
-          )}
-
-          {isFinished && !service.hasReport && (
-            <Button
-              className="w-full gap-2"
-              nativeButton={false}
-              render={<Link href={`/services/${id}/report`} />}
-            >
-              <FileText className="size-4" />
-              Gerar relatório
-            </Button>
           )}
         </div>
       </div>

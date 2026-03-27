@@ -3,7 +3,7 @@
 import { use } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, FileText, User } from "lucide-react";
+import { ArrowLeft, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -110,6 +110,7 @@ export default function AdminServiceDetailPage({ params }: Props) {
                     src={photo.url}
                     alt="Foto do serviço"
                     fill
+                    unoptimized
                     className="object-cover"
                     sizes="(max-width: 640px) 50vw, 33vw"
                   />
@@ -120,15 +121,24 @@ export default function AdminServiceDetailPage({ params }: Props) {
         </Card>
       )}
 
-      <Button
-        variant="outline"
-        className="gap-2"
-        nativeButton={false}
-        render={<Link href={`/admin/services/${id}/report`} />}
-      >
-        <FileText className="size-4" />
-        Ver relatório
-      </Button>
+      {isFinished && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold">Observação do serviço</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {service.notes ? (
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                {service.notes}
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">
+                Nenhuma observação registrada para este serviço.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

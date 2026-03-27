@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Icon, User, Wind } from "lucide-react";
+import { User, Wind } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuthStore } from "@/store/auth.store";
 
