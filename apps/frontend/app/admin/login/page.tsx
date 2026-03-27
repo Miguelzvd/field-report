@@ -34,6 +34,7 @@ export default function AdminLoginPage() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
+    // @ts-expect-error @hookform/resolvers
     resolver: zodResolver(schema),
   })
 

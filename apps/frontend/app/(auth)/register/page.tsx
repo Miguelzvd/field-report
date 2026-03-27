@@ -1,55 +1,56 @@
-"use client"
+"use client";
 
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Wind } from "lucide-react"
-import { toast } from "sonner"
-import axios from "axios"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useAuthStore } from "@/store/auth.store"
-import api from "@/lib/api"
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Wind } from "lucide-react";
+import { toast } from "sonner";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuthStore } from "@/store/auth.store";
+import api from "@/lib/api";
 
 const schema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
-})
+});
 
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof schema>;
 
 interface RegisterResponse {
-  user: { id: string; name: string; email: string; role: string }
-  tokens: { accessToken: string; refreshToken: string }
+  user: { id: string; name: string; email: string; role: string };
+  tokens: { accessToken: string; refreshToken: string };
 }
 
 export default function RegisterPage() {
-  const router = useRouter()
-  const { login } = useAuthStore()
+  const router = useRouter();
+  const { login } = useAuthStore();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
+    // @ts-expect-error @hookform/resolvers
     resolver: zodResolver(schema),
-  })
+  });
 
   const onSubmit = async (data: FormValues) => {
     try {
-      const res = await api.post<RegisterResponse>("/auth/register", data)
-      login(res.data.user, res.data.tokens.accessToken)
-      router.replace("/dashboard")
+      const res = await api.post<RegisterResponse>("/auth/register", data);
+      login(res.data.user, res.data.tokens.accessToken);
+      router.replace("/dashboard");
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message ?? "Erro ao criar conta")
+        toast.error(err.response?.data?.message ?? "Erro ao criar conta");
       }
     }
-  }
+  };
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center px-4 py-12">
@@ -120,11 +121,14 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-muted-foreground">
           Já tem conta?{" "}
-          <Link href="/login" className="text-primary hover:underline font-medium">
+          <Link
+            href="/login"
+            className="text-primary hover:underline font-medium"
+          >
             Entrar
           </Link>
         </p>
       </div>
     </div>
-  )
+  );
 }
