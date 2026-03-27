@@ -1,10 +1,11 @@
-import { ServiceType } from "@field-report/shared";
+import { ServiceType, UserRole } from "@field-report/shared";
 import * as servicesRepository from "./services.repository";
 import {
   ServiceSelect,
   ChecklistItemSelect,
   PhotoSelect,
 } from "../../db/schema";
+import { ServiceWithUser } from "./services.repository";
 
 const DEFAULT_CHECKLISTS: Record<ServiceType, string[]> = {
   preventiva: [
@@ -50,15 +51,28 @@ export async function createService(
   return { ...service, checklist: checklistItems, photos: [] };
 }
 
-export async function listServices(userId: string): Promise<ServiceSelect[]> {
+export async function listServices(
+  userId: string,
+  role: UserRole,
+): Promise<ServiceSelect[] | ServiceWithUser[]> {
+  if (role === "admin") {
+    return servicesRepository.findAllServicesWithUser();
+  }
   return servicesRepository.findServicesByUserId(userId);
 }
 
 export async function getServiceDetail(
   id: string,
   userId: string,
+  role: UserRole,
 ): Promise<ServiceDetail> {
-  const service = await servicesRepository.findServiceByIdAndUserId(id, userId);
+  let service: ServiceSelect | undefined;
+
+  if (role === "admin") {
+    service = await servicesRepository.findServiceByIdForAdmin(id);
+  } else {
+    service = await servicesRepository.findServiceByIdAndUserId(id, userId);
+  }
 
   if (!service) {
     throw Object.assign(new Error("Serviço não encontrado"), {

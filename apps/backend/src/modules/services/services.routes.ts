@@ -10,6 +10,7 @@ router.post("/", servicesController.createService);
 router.get("/", servicesController.listServices);
 router.get("/metrics", servicesController.getMetricsController);
 
+router.patch("/:serviceId/checklist/:itemId", servicesController.toggleChecklistItemController);
 router.get("/:id", servicesController.getService);
 router.patch("/:id", servicesController.updateService);
 router.delete("/:id", servicesController.deleteService);

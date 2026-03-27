@@ -9,8 +9,12 @@ import {
   ChecklistItemInsert,
   ChecklistItemSelect,
   PhotoSelect,
-  users, // <-- Precisa importar a tabela users para contar os técnicos
+  users,
 } from "../../db/schema";
+
+export interface ServiceWithUser extends ServiceSelect {
+  user: { id: string; name: string; email: string }
+}
 
 export async function findServicesByUserId(
   userId: string,
@@ -84,6 +88,50 @@ export async function findPhotosByServiceId(
 ): Promise<PhotoSelect[]> {
   return db.select().from(photos).where(eq(photos.serviceId, serviceId));
 }
+export async function findAllServicesWithUser(): Promise<ServiceWithUser[]> {
+  const result = await db
+    .select({
+      id: services.id,
+      userId: services.userId,
+      type: services.type,
+      status: services.status,
+      createdAt: services.createdAt,
+      finishedAt: services.finishedAt,
+      user: {
+        id: users.id,
+        name: users.name,
+        email: users.email,
+      },
+    })
+    .from(services)
+    .innerJoin(users, eq(services.userId, users.id))
+    .orderBy(services.createdAt)
+  return result
+}
+
+export async function findServiceByIdForAdmin(
+  id: string,
+): Promise<ServiceSelect | undefined> {
+  const result = await db
+    .select()
+    .from(services)
+    .where(eq(services.id, id))
+    .limit(1)
+  return result[0]
+}
+
+export async function updateChecklistItem(
+  id: string,
+  checked: boolean,
+): Promise<ChecklistItemSelect> {
+  const result = await db
+    .update(checklistItems)
+    .set({ checked })
+    .where(eq(checklistItems.id, id))
+    .returning()
+  return result[0]
+}
+
 export async function getAdminMetrics() {
   const totalRes = await db.select({ value: count() }).from(services);
   const totalServices = totalRes[0]?.value || 0;
