@@ -141,6 +141,7 @@ export function ServicesTable({ services }: ServicesTableProps) {
                       variant="ghost"
                       size="icon"
                       className="size-8"
+                      nativeButton={false}
                       render={<Link href={`/admin/services/${service.id}`} />}
                     >
                       <ExternalLink className="size-3.5" />

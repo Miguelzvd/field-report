@@ -41,7 +41,7 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            <Button render={<Link href="/services/new" />}>
+            <Button nativeButton={false} render={<Link href="/services/new" />}>
               <Plus className="size-4" />
               Novo serviço
             </Button>

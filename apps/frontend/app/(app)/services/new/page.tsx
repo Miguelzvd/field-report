@@ -12,6 +12,7 @@ export default function NewServicePage() {
           variant="ghost"
           size="icon"
           className="size-9"
+          nativeButton={false}
           render={<Link href="/dashboard" />}
         >
           <ArrowLeft className="size-4" />

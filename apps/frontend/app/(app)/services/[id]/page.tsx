@@ -57,6 +57,7 @@ export default function ServiceDetailPage({ params }: Props) {
       <div className="flex items-start gap-3">
         <Button
           render={<Link href="/dashboard" />}
+          nativeButton={false}
           variant="ghost"
           size="icon"
           className="mt-0.5 size-9 shrink-0"
@@ -124,6 +125,7 @@ export default function ServiceDetailPage({ params }: Props) {
         <Button
           variant="outline"
           className="w-full gap-2"
+          nativeButton={false}
           render={<Link href={`/services/${id}/report`} />}
         >
           <FileText className="size-4" />

@@ -41,6 +41,7 @@ export default function AdminServiceDetailPage({ params }: Props) {
           variant="outline"
           size="icon"
           className="size-9 shrink-0"
+          nativeButton={false}
           render={<Link href="/admin/services" />}
         >
           <ArrowLeft className="size-4" />
@@ -122,6 +123,7 @@ export default function AdminServiceDetailPage({ params }: Props) {
       <Button
         variant="outline"
         className="gap-2"
+        nativeButton={false}
         render={<Link href={`/admin/services/${id}/report`} />}
       >
         <FileText className="size-4" />

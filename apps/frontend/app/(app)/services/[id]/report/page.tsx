@@ -23,6 +23,7 @@ export default function ServiceReportPage({ params }: Props) {
           variant="ghost"
           size="icon"
           className="size-9 shrink-0"
+          nativeButton={false}
           render={<Link href={`/services/${id}`} />}
         >
           <ArrowLeft className="size-4" />
