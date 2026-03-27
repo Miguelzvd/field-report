@@ -116,7 +116,7 @@ export default function LoginPage() {
           </p>
           <Link
             href="/admin/login"
-            className="block text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+            className="block text-xs text-muted-foreground/90 hover:text-muted-foreground transition-colors"
           >
             Acesso administrativo
           </Link>

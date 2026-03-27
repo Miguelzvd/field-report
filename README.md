@@ -1,8 +1,21 @@
 # Field Report
 
-Ferramenta digital para equipes de ar-condicionado. Do checklist em campo até o relatório final — seja em manutenção preventiva, corretiva, instalação ou inspeção.
+Equipes de manutenção de ar-condicionado enfrentam um problema recorrente: registrar serviços em campo de forma padronizada, sem papel, sem perda de informação e com evidência fotográfica. A comunicação entre técnico e gestor costuma ser informal — mensagens de WhatsApp, anotações avulsas, fotos soltas no celular — o que dificulta rastreabilidade, auditoria e padronização dos processos.
 
-Técnicos registram a ordem de serviço, preenchem checklists específicos por tipo de serviço, fazem upload de fotos e ao final geram um relatório completo para o cliente ou gestor.
+**Field Report** resolve isso. É uma ferramenta web mobile-first onde o técnico abre o serviço no celular, preenche o checklist específico para aquele tipo de atendimento, registra fotos do equipamento e finaliza com um relatório estruturado. O gestor acompanha tudo pelo painel administrativo em tempo real, com visão completa de todos os técnicos e atendimentos.
+
+### O que o projeto entrega
+
+- **Para o técnico:** fluxo simples e rápido para registrar qualquer tipo de atendimento (preventiva, corretiva, instalação ou inspeção) diretamente do celular, sem papel
+- **Para o gestor:** painel com métricas, histórico completo de serviços, relatórios fotográficos e visão consolidada da equipe
+- **Para a empresa:** padronização de processos, rastreabilidade de serviços e evidência documentada de cada atendimento
+
+## Interfaces
+
+O sistema possui duas interfaces independentes:
+
+- **[Técnico](#urls-de-acesso)** — acesso mobile-first para registrar serviços, preencher checklists e fazer upload de fotos em campo
+- **[Admin](#urls-de-acesso)** — painel de gestão com métricas, listagem de todos os serviços e visão consolidada da equipe
 
 ## Stack
 
@@ -122,6 +135,27 @@ pnpm dev:frontend
 
 ### URLs de acesso
 
+| Serviço         | URL                               |
+| --------------- | --------------------------------- |
+| Login (técnico) | http://localhost:3000/login       |
+| Login (admin)   | http://localhost:3000/admin/login |
+| Backend         | http://localhost:3001             |
+| Health          | http://localhost:3001/health      |
+
+---
+
+## Rodando com Docker (tudo containerizado)
+
+Para subir frontend, backend e banco de dados com um único comando:
+
+```bash
+cp .env.example .env
+# Edite .env com seus valores antes de continuar
+docker-compose up --build
+```
+
+### URLs de acesso
+
 | Serviço  | URL                          |
 | -------- | ---------------------------- |
 | Frontend | http://localhost:3000        |
@@ -203,9 +237,10 @@ pnpm test:backend
 
 ### Photos (requer JWT)
 
-| Método | Rota                   | Descrição                            |
-| ------ | ---------------------- | ------------------------------------ |
-| POST   | `/services/:id/photos` | Upload de foto (multipart/form-data) |
+| Método | Rota                       | Descrição                            |
+| ------ | -------------------------- | ------------------------------------ |
+| POST   | `/services/:id/photos`     | Upload de foto (multipart/form-data) |
+| DELETE | `/services/:id/photos/:id` | Remover foto                         |
 
 ### Reports (requer JWT)
 
@@ -218,23 +253,28 @@ pnpm test:backend
 
 ## Fluxo do Técnico
 
+O técnico usa a aplicação em campo, registrando cada atendimento do início ao fim — do checklist até o relatório final.
+
 1. Acessa `/login` com email e senha
-2. No dashboard, visualiza todas as suas ordens de serviço
-3. Cria um novo serviço selecionando o tipo do atendimento
+2. No dashboard, visualiza todas as suas ordens de serviço (abertas e finalizadas)
+3. Cria um novo serviço em `/services/new`, selecionando o tipo do atendimento
 4. Um checklist específico é gerado automaticamente conforme o tipo escolhido
 5. Durante o atendimento, marca os itens do checklist conforme conclui cada etapa
 6. Faz upload das fotos do equipamento diretamente pela tela do serviço
 7. Finaliza o serviço quando todas as etapas estiverem concluídas
-8. Gera o relatório final com dados do serviço, checklist, fotos e responsável
+8. Gera o relatório final, que reúne dados do serviço, checklist, fotos e responsável
 
 ## Fluxo do Admin
 
+O administrador tem visão completa da operação, sem interferir nos atendimentos dos técnicos.
+
 1. Acessa `/admin/login` com credenciais de nível admin
-2. No dashboard, visualiza métricas gerais: total de serviços, distribuição por tipo e status
+2. No dashboard, visualiza métricas gerais: total de serviços, distribuição por tipo e status, total de técnicos
 3. Navega pela listagem completa de serviços de todos os técnicos em `/admin/services`
-4. Filtra serviços por tipo ou status
-5. Acessa o detalhe de qualquer serviço (somente leitura)
-6. Consulta a listagem de técnicos em `/admin/technicians`
+4. Filtra serviços por tipo ou por status conforme necessário
+5. Acessa o detalhe de qualquer serviço para ver checklist e fotos (somente leitura)
+6. Visualiza o relatório completo de qualquer atendimento
+7. Consulta a listagem de técnicos cadastrados em `/admin/technicians`
 
 ---
 
@@ -267,3 +307,9 @@ pnpm test:backend
 | Campo   | Regra                                                   |
 | ------- | ------------------------------------------------------- |
 | Arquivo | Obrigatório, extensões aceitas: `.jpg`, `.jpeg`, `.png` |
+
+**Relatório**
+
+| Campo       | Regra    |
+| ----------- | -------- |
+| Observações | Opcional |
