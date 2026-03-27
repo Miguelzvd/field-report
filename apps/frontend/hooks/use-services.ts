@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { useInfiniteQuery } from "@tanstack/react-query"
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import axios from "axios"
 import api from "@/lib/api"
@@ -63,6 +63,7 @@ export function useServiceDetail(id: string) {
 
 export function useCreateService() {
   const [loading, setLoading] = useState(false)
+  const queryClient = useQueryClient()
 
   const createService = async (type: ServiceType) => {
     setLoading(true)
@@ -72,6 +73,8 @@ export function useCreateService() {
         { type }
       )
       toast.success("Serviço criado com sucesso!")
+      await queryClient.invalidateQueries({ queryKey: ["services"] })
+      await queryClient.invalidateQueries({ queryKey: ["admin", "services"] })
       return res.data
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -106,12 +109,15 @@ export function useToggleChecklist() {
 
 export function useFinishService() {
   const [loading, setLoading] = useState(false)
+  const queryClient = useQueryClient()
 
   const finishService = async (id: string) => {
     setLoading(true)
     try {
       await api.patch(`/services/${id}`, { status: "finished", finishedAt: new Date().toISOString() })
       toast.success("Serviço finalizado!")
+      await queryClient.invalidateQueries({ queryKey: ["services"] })
+      await queryClient.invalidateQueries({ queryKey: ["admin", "services"] })
       return true
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -128,12 +134,15 @@ export function useFinishService() {
 
 export function useDeleteService() {
   const [loading, setLoading] = useState(false)
+  const queryClient = useQueryClient()
 
   const deleteService = async (id: string) => {
     setLoading(true)
     try {
       await api.delete(`/services/${id}`)
       toast.success("Serviço cancelado.")
+      await queryClient.invalidateQueries({ queryKey: ["services"] })
+      await queryClient.invalidateQueries({ queryKey: ["admin", "services"] })
       return true
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -150,12 +159,15 @@ export function useDeleteService() {
 
 export function useSaveNotes() {
   const [loading, setLoading] = useState(false)
+  const queryClient = useQueryClient()
 
   const saveNotes = async (id: string, notes: string) => {
     setLoading(true)
     try {
       await api.patch(`/services/${id}`, { notes })
       toast.success("Observação salva!")
+      await queryClient.invalidateQueries({ queryKey: ["services"] })
+      await queryClient.invalidateQueries({ queryKey: ["admin", "services"] })
       return true
     } catch (err) {
       if (axios.isAxiosError(err)) {

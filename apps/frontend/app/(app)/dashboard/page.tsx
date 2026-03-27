@@ -10,19 +10,18 @@ import { useServices } from "@/hooks/use-services";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 
 export default function DashboardPage() {
-  const {
-    data,
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useServices();
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useServices();
 
   const services = data?.pages.flatMap((p) => p.data) ?? [];
   const total = data?.pages[0]?.total ?? 0;
 
   const sentinelRef = useRef<HTMLDivElement>(null);
-  useIntersectionObserver(sentinelRef, fetchNextPage, hasNextPage && !isFetchingNextPage);
+  useIntersectionObserver(
+    sentinelRef,
+    fetchNextPage,
+    hasNextPage && !isFetchingNextPage,
+  );
 
   return (
     <div className="relative flex flex-col gap-5 min-h-full max-w-6xl mx-auto py-8 px-4">
@@ -75,12 +74,6 @@ export default function DashboardPage() {
               <div className="flex justify-center py-4">
                 <Loader2 className="size-5 animate-spin text-muted-foreground" />
               </div>
-            )}
-
-            {!hasNextPage && services.length > 0 && (
-              <p className="text-center text-xs text-muted-foreground py-4">
-                Todos os serviços carregados
-              </p>
             )}
           </>
         )}
