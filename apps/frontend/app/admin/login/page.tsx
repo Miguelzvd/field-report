@@ -1,33 +1,29 @@
-"use client"
+"use client";
 
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { useRouter } from "next/navigation"
-import { ShieldCheck } from "lucide-react"
-import { toast } from "sonner"
-import axios from "axios"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useAuthStore } from "@/store/auth.store"
-import api from "@/lib/api"
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuthStore } from "@/store/auth.store";
+import api from "@/lib/api";
+import { LoginResponse } from "@/interface/login";
 
 const schema = z.object({
   email: z.string().email("Email inválido"),
   password: z.string().min(1, "Senha obrigatória"),
-})
+});
 
-type FormValues = z.infer<typeof schema>
-
-interface LoginResponse {
-  user: { id: string; name: string; email: string; role: string }
-  tokens: { accessToken: string; refreshToken: string }
-}
+type FormValues = z.infer<typeof schema>;
 
 export default function AdminLoginPage() {
-  const router = useRouter()
-  const { login, logout } = useAuthStore()
+  const router = useRouter();
+  const { login, logout } = useAuthStore();
 
   const {
     register,
@@ -36,24 +32,33 @@ export default function AdminLoginPage() {
   } = useForm<FormValues>({
     // @ts-expect-error @hookform/resolvers
     resolver: zodResolver(schema),
-  })
+  });
 
   const onSubmit = async (data: FormValues) => {
     try {
-      const res = await api.post<LoginResponse>("/auth/login", data)
+      const res = await api.post<LoginResponse>("/auth/login", data);
       if (res.data.user.role !== "admin") {
-        logout()
-        toast.error("Acesso negado. Esta conta não tem permissão de administrador.")
-        return
+        logout();
+        toast.error(
+          "Acesso negado. Esta conta não tem permissão de administrador.",
+        );
+        return;
       }
-      login(res.data.user, res.data.tokens.accessToken)
-      router.replace("/admin/dashboard")
+      login(res.data.user, res.data.tokens.accessToken);
+      router.replace("/admin/dashboard");
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message ?? "Credenciais inválidas")
+        if (err.code === "ERR_NETWORK") {
+          toast.error("Erro de conexão com servidor");
+          return;
+        }
+        toast.error(err.response?.data?.message ?? "Credenciais inválidas");
+        return;
       }
+      toast.error("Erro desconhecido");
+      return;
     }
-  }
+  };
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-background px-4 py-12">
@@ -107,5 +112,5 @@ export default function AdminLoginPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }

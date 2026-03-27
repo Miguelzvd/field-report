@@ -20,11 +20,14 @@ api.interceptors.response.use(
     if (
       axios.isAxiosError(error) &&
       error.response?.status === 401 &&
-      typeof window !== "undefined"
+      typeof window !== "undefined" &&
+      !error.config?.url?.includes("/auth/login")
     ) {
-      const { user, logout } = useAuthStore.getState()
+      const { logout } = useAuthStore.getState()
       logout()
-      const path = user?.role === "admin" ? "/admin/login" : "/login"
+      const path = window.location.pathname.startsWith("/admin")
+        ? "/admin/login"
+        : "/login"
       window.location.href = path
     }
     return Promise.reject(error)

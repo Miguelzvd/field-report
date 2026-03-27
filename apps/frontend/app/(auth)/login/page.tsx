@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/auth.store";
 import api from "@/lib/api";
+import { LoginResponse } from "@/interface/login";
 
 const schema = z.object({
   email: z.string().email("Email inválido"),
@@ -20,11 +21,6 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
-
-interface LoginResponse {
-  user: { id: string; name: string; email: string; role: string };
-  tokens: { accessToken: string; refreshToken: string };
-}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -46,8 +42,15 @@ export default function LoginPage() {
       router.replace("/dashboard");
     } catch (err) {
       if (axios.isAxiosError(err)) {
+        if (err.code === "ERR_NETWORK") {
+          toast.error("Erro de conexão com servidor");
+          return;
+        }
         toast.error(err.response?.data?.message ?? "Credenciais inválidas");
+        return;
       }
+      toast.error("Erro desconhecido");
+      return;
     }
   };
 
