@@ -1,0 +1,136 @@
+"use client"
+
+import { useState, useEffect, useCallback } from "react"
+import { toast } from "sonner"
+import axios from "axios"
+import api from "@/lib/api"
+import type { ServiceType, ChecklistItem } from "@field-report/shared"
+
+export interface ApiService {
+  id: string
+  userId: string
+  type: ServiceType
+  status: "open" | "finished"
+  createdAt: string
+  finishedAt: string | null
+  checklist?: ChecklistItem[]
+}
+
+export function useServices() {
+  const [services, setServices] = useState<ApiService[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const fetch = useCallback(async () => {
+    try {
+      setLoading(true)
+      const res = await api.get<ApiService[]>("/services")
+      setServices(res.data)
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.message ?? "Erro ao carregar serviços")
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void fetch()
+  }, [fetch])
+
+  return { services, loading, refetch: fetch }
+}
+
+export function useServiceDetail(id: string) {
+  const [service, setService] = useState<
+    (ApiService & { checklist: ChecklistItem[] }) | null
+  >(null)
+  const [loading, setLoading] = useState(true)
+
+  const fetch = useCallback(async () => {
+    try {
+      setLoading(true)
+      const res = await api.get<ApiService & { checklist: ChecklistItem[] }>(
+        `/services/${id}`
+      )
+      setService(res.data)
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.message ?? "Erro ao carregar serviço")
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [id])
+
+  useEffect(() => {
+    void fetch()
+  }, [fetch])
+
+  return { service, loading, refetch: fetch }
+}
+
+export function useCreateService() {
+  const [loading, setLoading] = useState(false)
+
+  const createService = async (type: ServiceType) => {
+    setLoading(true)
+    try {
+      const res = await api.post<ApiService & { checklist: ChecklistItem[] }>(
+        "/services",
+        { type }
+      )
+      toast.success("Serviço criado com sucesso!")
+      return res.data
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.message ?? "Erro ao criar serviço")
+      }
+      return null
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { createService, loading }
+}
+
+export function useToggleChecklist() {
+  const toggleItem = async (
+    serviceId: string,
+    itemId: string,
+    checked: boolean
+  ) => {
+    try {
+      await api.patch(`/services/${serviceId}/checklist/${itemId}`, { checked })
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        toast.error("Erro ao atualizar checklist")
+      }
+    }
+  }
+
+  return { toggleItem }
+}
+
+export function useFinishService() {
+  const [loading, setLoading] = useState(false)
+
+  const finishService = async (id: string) => {
+    setLoading(true)
+    try {
+      await api.patch(`/services/${id}`, { status: "finished" })
+      toast.success("Serviço finalizado!")
+      return true
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.message ?? "Erro ao finalizar serviço")
+      }
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { finishService, loading }
+}
